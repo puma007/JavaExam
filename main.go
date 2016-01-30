@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"log"
+	"time"
 )
 
 var (
@@ -31,7 +33,7 @@ func main() {
 	var row *xlsx.Row
 	files, err := ioutil.ReadDir(fexamDir)
 	if err != nil {
-		fmt.Println("Error reading fexam directory!")
+		log.Println("Error reading fexam directory!")
 		os.Exit(1)
 	}
 	for _, file := range files {
@@ -44,14 +46,15 @@ func main() {
 	scoreFile = xlsx.NewFile()
 	scoreSheet, err := scoreFile.AddSheet("Sheet1")
 	if err != nil {
-		fmt.Printf(err.Error())
+		log.Println(err.Error())
 	}
 	//loop student exam xlsx file ,read sheet1 col2 to judge
+	startTime := time.Now().UnixNano()
 	for _, examFile := range examFiles {
 		score := 0
 		xlFile, error := xlsx.OpenFile(examFile) //open excel file
 		if error != nil {
-			fmt.Println("Error reading examfile")
+			log.Println("Error reading examfile")
 		}
 		//get student's name,no,class
 		//example:-Unlicensed-13715050_袁慧敏_13医器_java.xlsx
@@ -89,8 +92,10 @@ func main() {
 		cellscore.Value = strconv.Itoa(score)
 	}
 	err = scoreFile.Save("./score/score.xlsx")
+	endTime := time.Now().UnixNano()
+	log.Printf("试卷批改完成 共加载:%d 条记录, 所花时间:%.1f ms\n", len(examFiles), float64(endTime-startTime)/1000000)
 	if err != nil {
-		fmt.Printf(err.Error())
+		log.Println(err.Error())
 	}
 
 }

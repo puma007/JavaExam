@@ -2,36 +2,38 @@ package main
 
 import (
 	"fmt"
-	"github.com/tealeg/xlsx"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
-	"log"
 	"time"
+
+	"github.com/tealeg/xlsx"
 )
+
+//FEXAMDIR define the exam path
+const FEXAMDIR = "./fexam/"
 
 var (
 	choiceAnswer = []string{"D", "D", "D", "B", "A", "C", "A", "C", "A", "C", "D", "B", "C", "A", "B", "C", "C", "B", "B", "C"}
 	blankAnswer  = []string{"extends", "implements", "StringBuilder", "ArrayList", "m.put(\"语文\",90)"}
-	fexamDir     = "./fexam/"
 )
 
-func right(stuAnswer []string, keyAnswer []string) int {
-	rightNum := 0
+func right(stuAnswer, keyAnswer []string) (rightNum int) {
 	for i := 0; i < len(stuAnswer); i++ {
 		if strings.EqualFold(stuAnswer[i], keyAnswer[i]) {
 			rightNum = rightNum + 1
 		}
 	}
-	return rightNum
+	return
 }
 
 func main() {
 	var examFiles []string
 	var scoreFile *xlsx.File
 	var row *xlsx.Row
-	files, err := ioutil.ReadDir(fexamDir)
+	files, err := ioutil.ReadDir(FEXAMDIR)
 	if err != nil {
 		log.Println("Error reading fexam directory!")
 		os.Exit(1)
@@ -39,7 +41,7 @@ func main() {
 	for _, file := range files {
 		filename := file.Name()
 		if strings.HasSuffix(filename, ".xlsx") {
-			examFiles = append(examFiles, fexamDir+filename)
+			examFiles = append(examFiles, FEXAMDIR+filename)
 		}
 	}
 	//create score xlsx file to save student score
